@@ -14,5 +14,6 @@
         { "key": "X-XSS-Protection", "value": "1; mode=block" }
       ]
     }
-  ]
+  ],
+  "// NOTE": "This config directs Vercel to build the client app correctly"
 }
