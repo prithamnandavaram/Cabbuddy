@@ -1,0 +1,17 @@
+{
+  "name": "cabbuddy-backend",
+  "env": "node",
+  "plan": "free",
+  "buildCommand": "npm install",
+  "startCommand": "node index.js",
+  "envVars": [
+    {
+      "key": "PORT",
+      "value": "8000"
+    },
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    }
+  ]
+}
