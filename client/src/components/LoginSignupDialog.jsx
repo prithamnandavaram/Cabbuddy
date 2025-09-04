@@ -8,7 +8,8 @@ import { useContext, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
 import axios from "axios"
 
-const apiUri = import.meta.env.VITE_REACT_API_URI
+// Use the correct environment variable that we set up
+const apiUri = import.meta.env.VITE_API_URL || import.meta.env.VITE_REACT_API_URI
 
 const LoginSignupDialog = () => {
   const { loading, error, dispatch } = useContext(AuthContext);
@@ -53,15 +54,24 @@ const LoginSignupDialog = () => {
       return;
     }
     
+    // Log API URL for debugging
+    console.log("API URL being used:", apiUri);
+    
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const res = await axios.post(`${apiUri}/auth/register`, signupData, {withCredentials: true})
+      // Ensure we're posting to the correct endpoint
+      const url = `${apiUri}/auth/register`;
+      console.log("Posting to URL:", url);
+      console.log("With data:", signupData);
+      
+      const res = await axios.post(url, signupData, {withCredentials: true})
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
       setSignupData({ name: "", email: "", password: "" })
     } catch(err) {
       console.error("Signup error:", err);
       const errorMessage = err.response?.data?.message || "An error occurred during signup";
+      console.error("Error details:", err.response?.data || "No detailed error");
       dispatch({type: "LOGIN_FAILED", payload: {message: errorMessage}})
     }
   };
