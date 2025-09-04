@@ -1,8 +1,8 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-const baseURL = import.meta.env.VITE_REACT_API_URI;
-// const baseURL = "http://localhost:8080/api";
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+// Use environment variable in production, fallback to localhost for development
 
 const useFetch = (endpoint, includeCredentials = false) => {
   const [loading, setLoading] = useState(false)
