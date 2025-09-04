@@ -4,7 +4,13 @@ import express from "express";
 
 export const setupGlobalMiddleware = (app) => {
   app.use(cors({
-    origin: [process.env.CLIENT_URL, "http://localhost:5173"],
+    origin: [
+      process.env.CLIENT_URL, 
+      "http://localhost:5173",
+      "https://cabbuddy-black.vercel.app",
+      "https://cabbuddy.vercel.app",
+      "https://cabbuddy-git-main-prithamnandavaram.vercel.app"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
