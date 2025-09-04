@@ -2,10 +2,11 @@
   "name": "cabbuddy-root",
   "version": "1.0.0",
   "description": "Root package for CabBuddy deployment",
+  "license": "MIT",
   "scripts": {
-    "start": "cd client && npm start",
-    "build": "./vercel-build.sh",
-    "start:server": "cd server && npm start",
+    "start": "cd server && npm start",
+    "build": "./render-build.sh",
+    "start:client": "cd client && npm start",
     "build:server": "cd server && npm install",
     "vercel-build": "./vercel-build.sh"
   },
