@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
-const apiUri = import.meta.env.VITE_REACT_API_URI
+const apiUri = import.meta.env.VITE_API_URL || "http://localhost:8080/api"
 
 const formSchema = z.object({
   from: z.string(),
@@ -34,13 +34,14 @@ const PublishCard = () => {
     },
   });
 
+  // Helper function outside of onSubmit
+  function toLocalISOString(date) {
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  
   const onSubmit = async (data) => {
     try {
-      // Convert Date to local ISO string (YYYY-MM-DDTHH:mm) to avoid timezone shift
-      function toLocalISOString(date) {
-        const pad = (n) => n.toString().padStart(2, '0');
-        return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-      }
       const body = {
         "availableSeats": data.seat,
         "origin": {
@@ -53,11 +54,18 @@ const PublishCard = () => {
         "endTime": toLocalISOString(new Date(data.endTime)),
         "price": data.price
       }
-      await axios.post(`${apiUri}/rides`, body, {withCredentials: true});
+      
+      // Log the API URL and request body for debugging
+      console.log("Publishing ride to API URL:", `${apiUri}/rides`);
+      console.log("Request body:", body);
+      
+      const response = await axios.post(`${apiUri}/rides`, body, {withCredentials: true});
+      console.log("Ride creation successful:", response.data);
       toast("The ride has been Created")
       form.reset()
     } catch (error) {
       console.error('POST request failed:', error);
+      toast.error(`Failed to create ride: ${error.response?.data?.message || error.message || 'Unknown error'}`);
     }
   };
 
