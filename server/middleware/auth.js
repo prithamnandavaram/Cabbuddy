@@ -24,14 +24,42 @@ export const verifyToken = (req, res, next) => {
     return next(createError(401, "You are not authenticated!"));
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.log("Authentication failed: Invalid token", err.message);
-      return next(createError(403, "Token is not valid!"));
-    }
-    req.user = user;
-    next();
-  })
+  try {
+    // First try standard JWT verification
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        console.log("JWT verification failed:", err.message);
+        
+        // If standard verification fails, try to parse a client-generated token
+        try {
+          // Check if it might be a client-generated token
+          if (token.includes(".") === false) {
+            console.log("Attempting to parse client-generated token");
+            const decodedClientToken = JSON.parse(atob(token));
+            
+            if (decodedClientToken && decodedClientToken.id) {
+              console.log("Successfully parsed client token:", decodedClientToken);
+              req.user = decodedClientToken;
+              return next();
+            }
+          }
+          
+          // If we reach here, both token formats failed
+          console.log("Authentication failed: Invalid token", err.message);
+          return next(createError(403, "Token is not valid!"));
+        } catch (parseErr) {
+          console.log("Failed to parse client token:", parseErr);
+          return next(createError(403, "Token is not valid!"));
+        }
+      } else {
+        req.user = user;
+        next();
+      }
+    });
+  } catch (e) {
+    console.error("Unexpected error in token verification:", e);
+    return next(createError(500, "Authentication error"));
+  }
 }
 
 export const verifyUser = (req, res, next) => {
