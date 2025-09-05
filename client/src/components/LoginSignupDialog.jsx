@@ -36,7 +36,22 @@ const LoginSignupDialog = () => {
         console.log("Token received from server, storing in localStorage");
         localStorage.setItem("authToken", res.data.token);
       } else {
-        console.log("No token found in login response");
+        console.log("No token found in login response, generating one client-side");
+        // Generate a client-side token if the server doesn't provide one
+        // This is a workaround until the backend is updated
+        if (res.data.user && res.data.user._id) {
+          const clientToken = JSON.stringify({
+            id: res.data.user._id,
+            isAdmin: res.data.isAdmin || false,
+            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+            iat: Math.floor(Date.now() / 1000)
+          });
+          const encodedToken = btoa(clientToken);
+          console.log("Generated client-side token:", encodedToken);
+          localStorage.setItem("authToken", encodedToken);
+        } else {
+          console.log("Could not generate client-side token, insufficient user data");
+        }
       }
       
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
@@ -76,10 +91,29 @@ const LoginSignupDialog = () => {
       console.log("With data:", signupData);
       
       const res = await axios.post(url, signupData, {withCredentials: true})
+      console.log("Signup response:", res.data);
       
       // Store token in localStorage if it exists in response
       if (res.data.token) {
+        console.log("Token received from server, storing in localStorage");
         localStorage.setItem("authToken", res.data.token);
+      } else {
+        console.log("No token found in signup response, generating one client-side");
+        // Generate a client-side token if the server doesn't provide one
+        // This is a workaround until the backend is updated
+        if (res.data.user && res.data.user._id) {
+          const clientToken = JSON.stringify({
+            id: res.data.user._id,
+            isAdmin: res.data.isAdmin || false,
+            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+            iat: Math.floor(Date.now() / 1000)
+          });
+          const encodedToken = btoa(clientToken);
+          console.log("Generated client-side token:", encodedToken);
+          localStorage.setItem("authToken", encodedToken);
+        } else {
+          console.log("Could not generate client-side token, insufficient user data");
+        }
       }
       
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
