@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 const apiUri = import.meta.env.VITE_API_URL || "http://localhost:8080/api"
 
 const formSchema = z.object({
@@ -22,6 +24,7 @@ const formSchema = z.object({
 
 
 const PublishCard = () => {
+  const { user } = useContext(AuthContext);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,6 +45,11 @@ const PublishCard = () => {
   
   const onSubmit = async (data) => {
     try {
+      if (!user) {
+        toast.error("You must be logged in to publish a ride");
+        return;
+      }
+      
       const body = {
         "availableSeats": data.seat,
         "origin": {
@@ -58,14 +66,31 @@ const PublishCard = () => {
       // Log the API URL and request body for debugging
       console.log("Publishing ride to API URL:", `${apiUri}/rides`);
       console.log("Request body:", body);
+      console.log("Authentication status:", user ? "Logged in" : "Not logged in");
       
-      const response = await axios.post(`${apiUri}/rides`, body, {withCredentials: true});
+      // Get token from localStorage
+      const token = localStorage.getItem("authToken");
+      
+      // Include both withCredentials and Authorization header for maximum compatibility
+      const config = {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      };
+      
+      const response = await axios.post(`${apiUri}/rides`, body, config);
       console.log("Ride creation successful:", response.data);
-      toast("The ride has been Created")
-      form.reset()
+      toast("The ride has been Created");
+      form.reset();
     } catch (error) {
       console.error('POST request failed:', error);
-      toast.error(`Failed to create ride: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+      if (error.response?.status === 401) {
+        toast.error("Authentication failed. Please log in again.");
+      } else {
+        toast.error(`Failed to create ride: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+      }
     }
   };
 

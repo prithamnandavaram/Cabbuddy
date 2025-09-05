@@ -4,6 +4,15 @@ import { useEffect, useState } from "react"
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 // Use environment variable in production, fallback to localhost for development
 
+// Set up axios to include token in all requests
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 const useFetch = (endpoint, includeCredentials = false) => {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)

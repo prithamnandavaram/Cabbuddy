@@ -46,7 +46,11 @@ export const register = async (req, res, next) => {
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .json({ user: { ...otherDetails }, isAdmin: isAdmin });
+      .json({ 
+        user: { ...otherDetails }, 
+        isAdmin: isAdmin,
+        token: accessToken // Include the token in the response body
+      });
   } catch(err) {
     console.error("Registration error:", err);
     return res.status(500).json({message: err.message || "An error occurred during registration"});
@@ -85,7 +89,11 @@ export const login = async(req, res, next)=>{
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .json({ user: { ...otherDetails }, isAdmin: isAdmin });
+      .json({ 
+        user: { ...otherDetails }, 
+        isAdmin: isAdmin,
+        token: accessToken // Include the token in the response body
+      });
 
   }catch(err){
     console.error("Login error:", err);

@@ -2,11 +2,26 @@ import jwt from "jsonwebtoken"
 import { createError } from "../utils/error.js";
 
 export const verifyToken = (req, res, next) => {
-  const token = req.cookies.accessToken;
-  if(!token) return next(createError(401, "You are not authenticated!"));
+  // Try to get token from cookies
+  const cookieToken = req.cookies?.accessToken;
+  // Try to get token from Authorization header
+  const headerToken = req.headers.authorization?.startsWith('Bearer ') 
+    ? req.headers.authorization.split(' ')[1] 
+    : null;
+  
+  // Use the token from either source
+  const token = cookieToken || headerToken;
+  
+  if (!token) {
+    console.log("Authentication failed: No token provided");
+    return next(createError(401, "You are not authenticated!"));
+  }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user)=>{
-    if(err) return next(createError(403, "Token is not valid!"));
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log("Authentication failed: Invalid token", err.message);
+      return next(createError(403, "Token is not valid!"));
+    }
     req.user = user;
     next();
   })

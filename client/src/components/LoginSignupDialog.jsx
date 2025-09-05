@@ -29,6 +29,12 @@ const LoginSignupDialog = () => {
     
     try {
       const res = await axios.post(`${apiUri}/auth/login`, loginData, {withCredentials: true})
+      
+      // Store token in localStorage if it exists in response
+      if (res.data.token) {
+        localStorage.setItem("authToken", res.data.token);
+      }
+      
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
       setLoginData({ email: "", password: "" })
     } catch(err) {
@@ -66,6 +72,12 @@ const LoginSignupDialog = () => {
       console.log("With data:", signupData);
       
       const res = await axios.post(url, signupData, {withCredentials: true})
+      
+      // Store token in localStorage if it exists in response
+      if (res.data.token) {
+        localStorage.setItem("authToken", res.data.token);
+      }
+      
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
       setSignupData({ name: "", email: "", password: "" })
     } catch(err) {
