@@ -7,8 +7,8 @@ const RideCard = ({details}) => {
     // Extract the time without seconds
     const hours = selectedDate.getHours();
     const minutes = selectedDate.getMinutes();
-    // Format the time as HH:mm
-    return `${hours}:${minutes}`;
+    // Format the time as HH:mm with proper padding
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
 
   return (

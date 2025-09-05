@@ -46,8 +46,9 @@ const PublishCard = () => {
 
   // Helper function outside of onSubmit
   function toLocalISOString(date) {
+    // Use the standard ISO string format but ensure it's in the user's local timezone
     const pad = (n) => n.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00Z`;
   }
   
   const onSubmit = async (data) => {
