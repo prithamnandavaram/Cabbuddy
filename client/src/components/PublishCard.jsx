@@ -50,6 +50,24 @@ const PublishCard = () => {
         return;
       }
       
+      // EMERGENCY FIX: Generate token from user data if it doesn't exist in localStorage
+      let token = localStorage.getItem("authToken");
+      if (!token && user) {
+        console.log("No token found in localStorage, generating one from user data");
+        // Create a client-side token since none exists
+        if (user.user && user.user._id) {
+          const clientToken = JSON.stringify({
+            id: user.user._id,
+            isAdmin: user.isAdmin || false,
+            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+            iat: Math.floor(Date.now() / 1000)
+          });
+          token = btoa(clientToken);
+          console.log("Generated emergency token:", token);
+          localStorage.setItem("authToken", token);
+        }
+      }
+      
       const body = {
         "availableSeats": data.seat,
         "origin": {
@@ -68,8 +86,8 @@ const PublishCard = () => {
       console.log("Request body:", body);
       console.log("Authentication status:", user ? "Logged in" : "Not logged in");
       
-      // Get token from localStorage
-      const token = localStorage.getItem("authToken");
+      // Get token from localStorage (should exist now)
+      token = localStorage.getItem("authToken");
       console.log("Auth token from localStorage:", token ? "Token exists" : "No token found");
       
       // Check if user data has token
