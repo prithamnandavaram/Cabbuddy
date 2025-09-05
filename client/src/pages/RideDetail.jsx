@@ -10,8 +10,12 @@ import { toast } from "sonner"
 import { format, formatDistance } from "date-fns";
 import axios from "axios"
 
-// Always use the deployed API in production
-const apiUri = import.meta.env.MODE === 'production' 
+// Force production API URL when deployed (using URL check instead of env)
+const isDeployed = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('vercel.app') || 
+   window.location.hostname !== 'localhost');
+
+const apiUri = isDeployed
   ? "https://cabbuddy-tzte.onrender.com/api" 
   : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 

@@ -1,8 +1,18 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
-// Use environment variable in production, fallback to localhost for development
+// Force production API URL when deployed (using URL check instead of env)
+const isDeployed = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('vercel.app') || 
+   window.location.hostname !== 'localhost');
+
+const baseURL = isDeployed
+  ? "https://cabbuddy-tzte.onrender.com/api" 
+  : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
+
+console.log("API Base URL:", baseURL);
+console.log("Is deployed:", isDeployed);
+console.log("Environment mode:", import.meta.env.MODE);
 
 // Set up axios to include token in all requests
 axios.interceptors.request.use(config => {
