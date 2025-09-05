@@ -70,6 +70,10 @@ const PublishCard = () => {
       
       // Get token from localStorage
       const token = localStorage.getItem("authToken");
+      console.log("Auth token from localStorage:", token ? "Token exists" : "No token found");
+      
+      // Check if user data has token
+      console.log("User data:", user);
       
       // Include both withCredentials and Authorization header for maximum compatibility
       const config = {
@@ -79,6 +83,8 @@ const PublishCard = () => {
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       };
+      
+      console.log("Request config:", config);
       
       const response = await axios.post(`${apiUri}/rides`, body, config);
       console.log("Ride creation successful:", response.data);

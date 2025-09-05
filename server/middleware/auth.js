@@ -2,12 +2,19 @@ import jwt from "jsonwebtoken"
 import { createError } from "../utils/error.js";
 
 export const verifyToken = (req, res, next) => {
+  console.log("verifyToken middleware called");
+  console.log("Request headers:", req.headers);
+  console.log("Cookies:", req.cookies);
+  
   // Try to get token from cookies
   const cookieToken = req.cookies?.accessToken;
   // Try to get token from Authorization header
   const headerToken = req.headers.authorization?.startsWith('Bearer ') 
     ? req.headers.authorization.split(' ')[1] 
     : null;
+  
+  console.log("Cookie token:", cookieToken ? "Found" : "Not found");
+  console.log("Header token:", headerToken ? "Found" : "Not found");
   
   // Use the token from either source
   const token = cookieToken || headerToken;

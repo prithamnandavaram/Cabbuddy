@@ -111,11 +111,21 @@ export const joinRide = async (req, res, next) =>{
 
 export const createRide = async (req, res, next) =>{
   try{
+    console.log("createRide called, user:", req.user);
+    
+    if (!req.user || !req.user.id) {
+      console.log("User ID not found in request");
+      return res.status(401).json({message: "User authentication failed. Please log in again."});
+    }
+    
     const newRide = new Ride({...req.body, creator: req.user.id});
     await newRide.save()
     await User.findByIdAndUpdate(req.user.id, { $push: { ridesCreated: newRide._id } });
+    
+    console.log("Ride created successfully:", newRide);
     res.status(201).json(newRide)
   }catch(err){
+    console.error("Error creating ride:", err);
     next(err);
   }
 }

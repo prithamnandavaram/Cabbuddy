@@ -29,10 +29,14 @@ const LoginSignupDialog = () => {
     
     try {
       const res = await axios.post(`${apiUri}/auth/login`, loginData, {withCredentials: true})
+      console.log("Login response:", res.data);
       
       // Store token in localStorage if it exists in response
       if (res.data.token) {
+        console.log("Token received from server, storing in localStorage");
         localStorage.setItem("authToken", res.data.token);
+      } else {
+        console.log("No token found in login response");
       }
       
       dispatch({type:"LOGIN_SUCCESS", payload: res.data})
