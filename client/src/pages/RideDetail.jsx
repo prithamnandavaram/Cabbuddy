@@ -10,7 +10,10 @@ import { toast } from "sonner"
 import { format, formatDistance } from "date-fns";
 import axios from "axios"
 
-const apiUri = import.meta.env.VITE_REACT_API_URI
+// Always use the deployed API in production
+const apiUri = import.meta.env.MODE === 'production' 
+  ? "https://cabbuddy-tzte.onrender.com/api" 
+  : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 
 const RideDetail = () => {
   const { rideId } = useParams();

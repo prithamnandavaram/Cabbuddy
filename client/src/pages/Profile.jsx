@@ -16,7 +16,10 @@ import { Fragment, useContext, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Navigate } from "react-router-dom"
 import { toast } from "sonner"
-const apiUri = import.meta.env.VITE_REACT_API_URI
+// Always use the deployed API in production
+const apiUri = import.meta.env.MODE === 'production' 
+  ? "https://cabbuddy-tzte.onrender.com/api" 
+  : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 
 const Profile = () => {
   const {user} = useContext(AuthContext)

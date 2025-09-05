@@ -8,8 +8,10 @@ import { useContext, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
 import axios from "axios"
 
-// Use the correct environment variable that we set up
-const apiUri = import.meta.env.VITE_API_URL || import.meta.env.VITE_REACT_API_URI
+// Always use the deployed API in production
+const apiUri = import.meta.env.MODE === 'production' 
+  ? "https://cabbuddy-tzte.onrender.com/api" 
+  : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 
 const LoginSignupDialog = () => {
   const { loading, error, dispatch } = useContext(AuthContext);
