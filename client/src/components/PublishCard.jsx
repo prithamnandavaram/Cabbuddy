@@ -21,12 +21,23 @@ const apiUri = isDeployed
   : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 
 const formSchema = z.object({
-  from: z.string(),
-  to: z.string(),
-  seat: z.number().min(1).max(10),
-  price: z.number().nonnegative(),
-  startTime: z.date().min(new Date()),
-  endTime: z.date().min(new Date())
+  from: z.string().min(1, "Departure location is required"),
+  to: z.string().min(1, "Destination is required"),
+  seat: z.number().min(1, "At least 1 seat required").max(10, "Maximum 10 seats allowed"),
+  price: z.number().min(0, "Price cannot be negative"),
+  startTime: z.date({
+    required_error: "Start time is required",
+    invalid_type_error: "Invalid start time",
+  }).refine((date) => date > new Date(), {
+    message: "Start time must be in the future",
+  }),
+  endTime: z.date({
+    required_error: "End time is required", 
+    invalid_type_error: "Invalid end time",
+  })
+}).refine((data) => data.endTime > data.startTime, {
+  message: "End time must be after start time",
+  path: ["endTime"],
 })
 
 
@@ -44,11 +55,12 @@ const PublishCard = () => {
     },
   });
 
-  // Helper function outside of onSubmit
-  function toLocalISOString(date) {
-    // Use the standard ISO string format but ensure it's in the user's local timezone
-    const pad = (n) => n.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00Z`;
+  // Helper function for proper datetime formatting
+  function formatDateTime(date) {
+    if (!date) return null;
+    // Ensure we're working with a Date object and return standard ISO string
+    const d = new Date(date);
+    return d.toISOString();
   }
   
   const onSubmit = async (data) => {
@@ -57,25 +69,30 @@ const PublishCard = () => {
         toast.error("You must be logged in to publish a ride");
         return;
       }
-      
-      // EMERGENCY FIX: Generate token from user data if it doesn't exist in localStorage
-      let token = localStorage.getItem("authToken");
-      if (!token && user) {
-        console.log("No token found in localStorage, generating one from user data");
-        // Create a client-side token since none exists
-        if (user.user && user.user._id) {
-          const clientToken = JSON.stringify({
-            id: user.user._id,
-            isAdmin: user.isAdmin || false,
-            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
-            iat: Math.floor(Date.now() / 1000)
-          });
-          token = btoa(clientToken);
-          console.log("Generated emergency token:", token);
-          localStorage.setItem("authToken", token);
-        }
+
+      // Validate dates before submitting
+      const startDate = new Date(data.startTime);
+      const endDate = new Date(data.endTime);
+      const now = new Date();
+
+      if (startDate < now) {
+        toast.error("Start time cannot be in the past");
+        return;
+      }
+
+      if (endDate <= startDate) {
+        toast.error("End time must be after start time");
+        return;
       }
       
+      // Get authentication token properly
+      const token = localStorage.getItem("authToken") || user?.token;
+      
+      if (!token) {
+        toast.error("Authentication token missing. Please log in again.");
+        return;
+      }
+
       const body = {
         "availableSeats": data.seat,
         "origin": {
@@ -84,8 +101,8 @@ const PublishCard = () => {
         "destination": {
           "place": data.to.trim(),
         },
-        "startTime": toLocalISOString(new Date(data.startTime)),
-        "endTime": toLocalISOString(new Date(data.endTime)),
+        "startTime": formatDateTime(data.startTime),
+        "endTime": formatDateTime(data.endTime),
         "price": data.price
       }
       
@@ -93,15 +110,6 @@ const PublishCard = () => {
       console.log("Publishing ride to API URL:", `${apiUri}/rides`);
       console.log("Request body:", body);
       console.log("Authentication status:", user ? "Logged in" : "Not logged in");
-      console.log("Current hostname:", window.location.hostname);
-      console.log("isDeployed:", isDeployed);
-      
-      // Get token from localStorage (should exist now)
-      token = localStorage.getItem("authToken");
-      console.log("Auth token from localStorage:", token ? "Token exists" : "No token found");
-      
-      // Check if user data has token
-      console.log("User data:", user);
       
       // Include both withCredentials and Authorization header for maximum compatibility
       const config = {
@@ -116,14 +124,17 @@ const PublishCard = () => {
       
       const response = await axios.post(`${apiUri}/rides`, body, config);
       console.log("Ride creation successful:", response.data);
-      toast("The ride has been Created");
+      toast.success("Ride published successfully!");
       form.reset();
     } catch (error) {
-      console.error('POST request failed:', error);
+      console.error('Ride creation failed:', error);
+      
       if (error.response?.status === 401) {
         toast.error("Authentication failed. Please log in again.");
+      } else if (error.response?.data?.message) {
+        toast.error(`Failed to create ride: ${error.response.data.message}`);
       } else {
-        toast.error(`Failed to create ride: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+        toast.error("Failed to create ride. Please try again.");
       }
     }
   };
