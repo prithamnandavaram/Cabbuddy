@@ -3,7 +3,7 @@
   "env": "node",
   "plan": "free",
   "rootDir": "server",
-  "buildCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm install",
   "startCommand": "node index.js",
   "envVars": [
     {
