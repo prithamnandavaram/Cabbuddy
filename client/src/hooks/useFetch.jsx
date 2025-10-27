@@ -10,20 +10,12 @@ const baseURL = isDeployed
   ? "https://cabbuddy-tzte.onrender.com/api" 
   : (import.meta.env.VITE_API_URL || "http://localhost:8080/api");
 
-console.log("API Base URL:", baseURL);
-console.log("Is deployed:", isDeployed);
-console.log("Environment mode:", import.meta.env.MODE);
-
 // Set up axios to include token in all requests
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem("authToken");
-  console.log("Axios interceptor - token from localStorage:", token ? "Token exists" : "No token found");
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log("Added Authorization header to request");
-  } else {
-    console.log("No token available, request will proceed without Authorization header");
   }
   
   return config;

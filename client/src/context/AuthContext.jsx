@@ -45,13 +45,6 @@ export const AuthContextProvider = ({children}) => {
 
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(state.user))
-    
-    // Log authentication state whenever it changes
-    console.log("Auth state updated:", {
-      isLoggedIn: state.user !== null,
-      userData: state.user,
-      token: localStorage.getItem("authToken")
-    });
   }, [state.user])
   
 

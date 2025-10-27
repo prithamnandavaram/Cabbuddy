@@ -26,7 +26,6 @@ export const getAllRides = async (req, res, next) => {
 export const findRides = async (req, res, next) => {
   try {
     const { from, to, seat, date, sort, departure } = req.query;
-    console.log('SEARCH QUERY:', req.query);
     
     // Validate required parameters
     if (!from || !to || !seat || !date) {
@@ -109,15 +108,11 @@ export const findRides = async (req, res, next) => {
     if (sort === 'Price') sortOption = { price: 1 };
     if (sort === 'Shortest ride') sortOption = { endTime: 1 };
 
-    console.log('Search filter:', JSON.stringify(filter, null, 2));
-
     // Execute search with better error handling
     const rides = await Ride.find(filter)
       .populate('creator', 'name profilePicture stars')
       .sort(sortOption)
       .lean();
-
-    console.log(`Found ${rides.length} rides`);
 
     res.status(200).json({ 
       success: true, 
@@ -126,7 +121,6 @@ export const findRides = async (req, res, next) => {
     });
     
   } catch (err) {
-    console.error('Search error:', err);
     res.status(500).json({
       success: false,
       message: 'Search failed. Please try again.',
@@ -163,11 +157,7 @@ export const joinRide = async (req, res, next) =>{
 
 export const createRide = async (req, res, next) => {
   try {
-    console.log("createRide called, user:", req.user);
-    console.log("Request body:", req.body);
-    
     if (!req.user || !req.user.id) {
-      console.log("User ID not found in request");
       return res.status(401).json({
         success: false,
         message: "User authentication failed. Please log in again."
@@ -242,8 +232,6 @@ export const createRide = async (req, res, next) => {
       $push: { ridesCreated: newRide._id } 
     });
     
-    console.log("Ride created successfully:", newRide);
-    
     res.status(201).json({
       success: true,
       message: "Ride created successfully",
@@ -251,8 +239,6 @@ export const createRide = async (req, res, next) => {
     });
     
   } catch (err) {
-    console.error("Error creating ride:", err);
-    
     // Handle Mongoose validation errors
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(e => e.message);

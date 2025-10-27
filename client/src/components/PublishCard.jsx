@@ -106,11 +106,6 @@ const PublishCard = () => {
         "price": data.price
       }
       
-      // Log the API URL and request body for debugging
-      console.log("Publishing ride to API URL:", `${apiUri}/rides`);
-      console.log("Request body:", body);
-      console.log("Authentication status:", user ? "Logged in" : "Not logged in");
-      
       // Include both withCredentials and Authorization header for maximum compatibility
       const config = {
         withCredentials: true,
@@ -120,10 +115,7 @@ const PublishCard = () => {
         }
       };
       
-      console.log("Request config:", config);
-      
-      const response = await axios.post(`${apiUri}/rides`, body, config);
-      console.log("Ride creation successful:", response.data);
+      await axios.post(`${apiUri}/rides`, body, config);
       toast.success("Ride published successfully!");
       form.reset();
     } catch (error) {
