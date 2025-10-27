@@ -9,16 +9,16 @@ const Testimonial = () => {
       prof: "UI Developer"
     },
     {
-      desc: "Ever since I started using CabBuddy, my daily commute has transformed into a seamless and enjoyable experience. The convenience and reliability of this app have truly exceeded my expectations. The user-friendly interface makes booking a ride a breeze.",
+      desc: "Building CabBuddy has been an exciting journey in full-stack development. The seamless integration of React, Node.js, and MongoDB demonstrates how modern web technologies can solve real-world transportation challenges while promoting sustainability and community building.",
       img: "https://dummyimage.com/106x106",
-      user: "Murphy",
-      prof: "Backend Developer"
+      user: "Pritham",
+      prof: "Full-Stack Developer"
     },
     {
       desc: "I just had to share my recent experience with CabBuddy because it has truly been a game-changer for me! From the easy sign-up process to the consistently reliable service, this app has quickly become my go-to for hassle-free transportation.",
       img: "https://dummyimage.com/106x106",
-      user: "Murphy",
-      prof: "Backend Developer"
+      user: "Sarah",
+      prof: "Product Manager"
     }
   ]
   return (

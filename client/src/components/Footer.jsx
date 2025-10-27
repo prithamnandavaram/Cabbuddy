@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Github, Linkedin, Code2 } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -29,11 +29,11 @@ const Footer = () => {
           <div className="flex">
             <p className="mr-1 text-foreground">Email:</p>
             <a
-              href="mailto:info@cabbuddy.mail"
+              href="mailto:prithamnandavaram@gmail.com"
               aria-label="Our email"
               title="Our email"
             >
-              cabbuddy@gmail.com
+              prithamnandavaram@gmail.com
             </a>
           </div>
           <div className="flex">
@@ -52,11 +52,32 @@ const Footer = () => {
         <div>
           <span className="text-base font-bold text-foreground">Social</span>
           <div className="flex items-center mt-2 space-x-3">
-            <a href="/"><Twitter /></a>
-            <a href="/"><Instagram /></a>
-            <a href="/"><Facebook /></a>
+            <a 
+              href="https://github.com/prithamnandavaram" 
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              <Github className="w-5 h-5 hover:text-primary transition-colors" />
+            </a>
+            <a 
+              href="https://linkedin.com/in/prithamnandavaram" 
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5 hover:text-primary transition-colors" />
+            </a>
+            <a 
+              href="https://leetcode.com/u/prithamnandavaram" 
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LeetCode"
+            >
+              <Code2 className="w-5 h-5 hover:text-primary transition-colors" />
+            </a>
           </div>
-          <p className="mt-4 text-sm">Follow us on social media</p>
+          <p className="mt-4 text-sm">Connect with us</p>
         </div>
       </div>
       <div className="flex flex-col-reverse justify-between pt-5 pb-10 border-t lg:flex-row">
